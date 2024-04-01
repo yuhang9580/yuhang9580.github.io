@@ -174,7 +174,7 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="三种fn特征"><a class="header" href="#三种fn特征">三种Fn特征</a></h1>
+                        <h2 id="三种fn特征"><a class="header" href="#三种fn特征">三种Fn特征</a></h2>
 <p>闭包捕获变量有三种途径, 恰好对应函数参数的三种传入方式:</p>
 <ol>
 <li>转移所有权</li>
@@ -182,20 +182,20 @@
 <li>不可变借用
 因此, 相应的 <code>Fn</code> 特征也有三种</li>
 </ol>
-<h1 id="chapter-2"><a class="header" href="#chapter-2">Chapter 2</a></h1>
-<pre><pre class="playground"><code class="language-rust">fn main() {
-    let v = vec![0; 3];   // 默认值为 0，初始长度为 3
-    let v_from = Vec::from([0, 0, 0]);
-    assert_eq!(v, v_from);
-}</code></pre></pre>
-<pre><code class="language-cpp">#include&lt;iostream&gt;
-int main(void)
+<h2 id="fnonce"><a class="header" href="#fnonce"><code>FnOnce</code></a></h2>
+<p>改类型的闭包会拿走被捕获变量的所有权, <code>Once</code>顾名思义, 说明该闭包只能运行一次:</p>
+<pre><pre class="playground"><code class="language-rust">fn fn_once&lt;F&gt;(func: F)
+where
+    F: FnOnce(usize) -&gt; bool,
 {
-    std::cout&lt;&lt;"hello"&lt;&lt;std::endl;
-    return 0;
+    println!("{}", func(3));
+    println!("{}", func(4));
 }
 
-</code></pre>
+fn main() {
+    let x = vec![1, 2, 3];
+    fn_once(|z|{z == x.len()})
+}</code></pre></pre>
 
                     </main>
 
