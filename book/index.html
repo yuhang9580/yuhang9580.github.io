@@ -3,7 +3,7 @@
     <head>
         <!-- Book generated using mdBook -->
         <meta charset="UTF-8">
-        <title>Chapter 1 - 个人笔记</title>
+        <title>闭包 - 个人笔记</title>
 
 
         <!-- Custom HTML head -->
@@ -88,7 +88,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html" class="active"><strong aria-hidden="true">1.</strong> Chapter 1</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html" class="active"><strong aria-hidden="true">1.</strong> 闭包</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -173,7 +173,14 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
+                        <h1 id="三种fn特征"><a class="header" href="#三种fn特征">三种Fn特征</a></h1>
+<p>闭包捕获变量有三种途径, 恰好对应函数参数的三种传入方式:</p>
+<ol>
+<li>转移所有权</li>
+<li>可变借用</li>
+<li>不可变借用
+因此, 相应的 <code>Fn</code> 特征也有三种</li>
+</ol>
 <h1 id="chapter-2"><a class="header" href="#chapter-2">Chapter 2</a></h1>
 <pre><pre class="playground"><code class="language-rust">fn main() {
     let v = vec![0; 3];   // 默认值为 0，初始长度为 3
