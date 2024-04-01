@@ -1,0 +1,6 @@
+[book]
+authors = ["lee"]
+language = "en"
+multilingual = false
+src = "src"
+title = "个人笔记"
