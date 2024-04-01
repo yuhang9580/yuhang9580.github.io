@@ -8,3 +8,14 @@ fn main() {
     assert_eq!(v, v_from);
 }
 ```
+
+
+```cpp
+#include<iostream>
+int main(void)
+{
+    std::cout<<"hello"<<std::endl;
+    return 0;
+}
+
+```
