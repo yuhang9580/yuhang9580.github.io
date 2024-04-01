@@ -181,11 +181,24 @@
 <li>不可变借用
 因此, 相应的 <code>Fn</code> 特征也有三种</li>
 </ol>
-<h2 id="fnonce"><a class="header" href="#fnonce"><code>FnOnce</code></a></h2>
-<p>改类型的闭包会拿走被捕获变量的所有权, <code>Once</code>顾名思义, 说明该闭包只能运行一次:</p>
+<h3 id="fnonce"><a class="header" href="#fnonce"><code>FnOnce</code></a></h3>
+<p>改类型的闭包会拿走被捕获变量的所有权, <code>Once</code>顾名思义, 说明该闭包只能运行一次, 以下是报错代码:</p>
 <pre><pre class="playground"><code class="language-rust">fn fn_once&lt;F&gt;(func: F)
 where
     F: FnOnce(usize) -&gt; bool,
+{
+    println!("{}", func(3));
+    println!("{}", func(4));
+}
+
+fn main() {
+    let x = vec![1, 2, 3];
+    fn_once(|z|{z == x.len()})
+}</code></pre></pre>
+<p>因为<code>F</code>没有实现<code>Copy</code>特征, 所以会报错, 需要增加约束, 实现了<code>Copy</code>的闭包:</p>
+<pre><pre class="playground"><code class="language-rust">fn fn_once&lt;F&gt;(func: F)
+where
+    F: FnOnce(usize) -&gt; bool + Copy,// 改动在这里
 {
     println!("{}", func(3));
     println!("{}", func(4));
