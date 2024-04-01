@@ -176,6 +176,11 @@
                     <main>
                         <h1 id="chapter-1"><a class="header" href="#chapter-1">Chapter 1</a></h1>
 <h1 id="chapter-2"><a class="header" href="#chapter-2">Chapter 2</a></h1>
+<pre><pre class="playground"><code class="language-rust">fn main() {
+    let v = vec![0; 3];   // 默认值为 0，初始长度为 3
+    let v_from = Vec::from([0, 0, 0]);
+    assert_eq!(v, v_from);
+}</code></pre></pre>
 
                     </main>
 
