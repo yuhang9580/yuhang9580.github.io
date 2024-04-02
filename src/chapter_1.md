@@ -38,6 +38,41 @@ fn main() {
 }
 ```
 
+### `FnMut`
+`FnMut`以可变借用的方式捕获了环境中的值, 因此可以修改该值, 如下的错误代码为:
+```rust
+fn main(){
+    let mut s = String::new();
+    let update_string = |str| s.push_str(str);
+    update_string("hello");
+    println!("{:?}", s);
+}
+```
+
+需要将`update_string`修改为可变变量, 代码如下:
+```rust
+fn main(){
+    let mut s = String::new();
+    let mut update_string = |str| s.push_str(str);
+    update_string("hello");
+    println!("{:?}", s);
+}
+```
+
+以下为一个更复杂的例子:
+```rust
+fn main(){
+    let mut  s = String::new();
+    let update_string = |str| s.push_str(str);
+    exec(update_string);
+    println!("{:?}", s);
+}
+
+fn exec<'a,F:FnMut(&'a str)> (mut f:F){
+    f("hello")
+}
+```
+
 ## move关键字
 如果想要强制闭包去的捕获变量的所有权, 可以在参数列表前添加`move`关键字, 这种用法通常用于闭包声明周期大于捕获变量的声明周期时, 例如将闭包返回或移入其他线程.
 ```rust

@@ -89,7 +89,7 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-                <ol class="chapter"><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">1.</strong> 闭包</a></li></ol>
+                <ol class="chapter"><li class="chapter-item expanded "><a href="cover.html"><strong aria-hidden="true">1.</strong> 封面</a></li><li class="chapter-item expanded "><a href="chapter_1.html"><strong aria-hidden="true">2.</strong> 闭包</a></li></ol>
             </div>
             <div id="sidebar-resize-handle" class="sidebar-resize-handle">
                 <div class="sidebar-resize-indicator"></div>
@@ -174,7 +174,8 @@
 
                 <div id="content" class="content">
                     <main>
-                        <h2 id="三种fn特征"><a class="header" href="#三种fn特征">三种Fn特征</a></h2>
+                        <h1 id="记录一些可能用到的知识"><a class="header" href="#记录一些可能用到的知识">记录一些可能用到的知识</a></h1>
+<div style="break-before: page; page-break-before: always;"></div><h2 id="三种fn特征"><a class="header" href="#三种fn特征">三种Fn特征</a></h2>
 <p>闭包捕获变量有三种途径, 恰好对应函数参数的三种传入方式:</p>
 <ol>
 <li>转移所有权</li>
@@ -208,6 +209,32 @@ where
 fn main() {
     let x = vec![1, 2, 3];
     fn_once(|z|{z == x.len()})
+}</code></pre></pre>
+<h3 id="fnmut"><a class="header" href="#fnmut"><code>FnMut</code></a></h3>
+<p><code>FnMut</code>以可变借用的方式捕获了环境中的值, 因此可以修改该值, 如下的错误代码为:</p>
+<pre><pre class="playground"><code class="language-rust">fn main(){
+    let mut s = String::new();
+    let update_string = |str| s.push_str(str);
+    update_string("hello");
+    println!("{:?}", s);
+}</code></pre></pre>
+<p>需要将<code>update_string</code>修改为可变变量, 代码如下:</p>
+<pre><pre class="playground"><code class="language-rust">fn main(){
+    let mut s = String::new();
+    let mut update_string = |str| s.push_str(str);
+    update_string("hello");
+    println!("{:?}", s);
+}</code></pre></pre>
+<p>以下为一个更复杂的例子:</p>
+<pre><pre class="playground"><code class="language-rust">fn main(){
+    let mut  s = String::new();
+    let update_string = |str| s.push_str(str);
+    exec(update_string);
+    println!("{:?}", s);
+}
+
+fn exec&lt;'a,F:FnMut(&amp;'a str)&gt; (mut f:F){
+    f("hello")
 }</code></pre></pre>
 <h2 id="move关键字"><a class="header" href="#move关键字">move关键字</a></h2>
 <p>如果想要强制闭包去的捕获变量的所有权, 可以在参数列表前添加<code>move</code>关键字, 这种用法通常用于闭包声明周期大于捕获变量的声明周期时, 例如将闭包返回或移入其他线程.</p>
