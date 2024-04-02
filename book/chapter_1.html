@@ -191,10 +191,10 @@ where
     println!("{}", func(4));
 }
 
-fn main() {
-    let x = vec![1, 2, 3];
+<span class="boring">fn main() {
+</span>    let x = vec![1, 2, 3];
     fn_once(|z|{z == x.len()})
-}</code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 <p>因为<code>F</code>没有实现<code>Copy</code>特征, 所以会报错, 需要增加约束, 实现了<code>Copy</code>的闭包:</p>
 <pre><pre class="playground"><code class="language-rust">fn fn_once&lt;F&gt;(func: F)
 where
@@ -204,42 +204,73 @@ where
     println!("{}", func(4));
 }
 
-fn main() {
-    let x = vec![1, 2, 3];
+<span class="boring">fn main() {
+</span>    let x = vec![1, 2, 3];
     fn_once(|z|{z == x.len()})
-}</code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 <h3 id="fnmut"><a class="header" href="#fnmut"><code>FnMut</code></a></h3>
 <p><code>FnMut</code>以可变借用的方式捕获了环境中的值, 因此可以修改该值, 如下的错误代码为:</p>
-<pre><pre class="playground"><code class="language-rust">fn main(){
-    let mut s = String::new();
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main(){
+</span>    let mut s = String::new();
     let update_string = |str| s.push_str(str);
     update_string("hello");
     println!("{:?}", s);
-}</code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 <p>需要将<code>update_string</code>修改为可变变量, 代码如下:</p>
-<pre><pre class="playground"><code class="language-rust">fn main(){
-    let mut s = String::new();
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main(){
+</span>    let mut s = String::new();
     let mut update_string = |str| s.push_str(str);
     update_string("hello");
     println!("{:?}", s);
-}</code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
 <p>以下为一个更复杂的例子:</p>
-<pre><pre class="playground"><code class="language-rust">fn main(){
-    let mut  s = String::new();
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main(){
+</span>    let mut  s = String::new();
     let update_string = |str| s.push_str(str);
     exec(update_string);
     println!("{:?}", s);
-}
-
+<span class="boring">}
+</span>
 fn exec&lt;'a,F:FnMut(&amp;'a str)&gt; (mut f:F){
+    f("hello")
+}</code></pre></pre>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main() {
+</span>    // 拿所有权
+    let s = String::new();
+    let update_string = move || println!("{}", s);
+
+    exec(update_string);
+    // exec2(update_string); // 不能再用了
+
+    // 可变引用
+    let mut s = String::new();
+    let mut update_string = || s.push_str("hello");
+    exec(update_string);
+    // exec1(update_string); // 不能再用了
+<span class="boring">}
+</span>
+fn exec&lt;'a, F: FnMut(&amp;'a str)&gt;(mut f: F) {
+    f("hello")
+}</code></pre></pre>
+<h3 id="fn"><a class="header" href="#fn"><code>Fn</code></a></h3>
+<p>它以不可变借用的方式捕获环境中的值, 例子如下:</p>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">fn main(){
+</span>    let  s = String::new();
+    let update_string = |str|println!("{}, {}",s,str);
+    exec(update_string);
+    println!("{:?}", s);
+    
+<span class="boring">}
+</span>
+fn exec&lt;'a, F:Fn(&amp;'a str)&gt; (mut f:F){
     f("hello")
 }</code></pre></pre>
 <h2 id="move关键字"><a class="header" href="#move关键字">move关键字</a></h2>
 <p>如果想要强制闭包去的捕获变量的所有权, 可以在参数列表前添加<code>move</code>关键字, 这种用法通常用于闭包声明周期大于捕获变量的声明周期时, 例如将闭包返回或移入其他线程.</p>
 <pre><pre class="playground"><code class="language-rust">use std::{thread, time::Duration};
 
-fn main(){
-    let v = vec![1,2,3];
+<span class="boring">fn main(){
+</span>    let v = vec![1,2,3];
     let handle = thread::spawn(move || {
         println!("Here's a vector: {:?}", v);
         for i in 0..=10{
@@ -249,7 +280,27 @@ fn main(){
     });
     handle.join().unwrap();
     println!("abc");
-}</code></pre></pre>
+<span class="boring">}</span></code></pre></pre>
+<h3 id="move和fn"><a class="header" href="#move和fn">move和Fn</a></h3>
+<h3 id="三种fn简化版伪源码"><a class="header" href="#三种fn简化版伪源码">三种Fn简化版伪源码</a></h3>
+<pre><pre class="playground"><code class="language-rust"><span class="boring">#![allow(unused)]
+</span><span class="boring">fn main() {
+</span>pub trait Fn&lt;Args&gt; : FnMut&lt;Args&gt; {
+    extern "rust-call" fn call(&amp;self, args: Args) -&gt; Self::Output;
+}
+
+pub trait FnMut&lt;Args&gt; : FnOnce&lt;Args&gt; {
+    extern "rust-call" fn call_mut(&amp;mut self, args: Args) -&gt; Self::Output;
+}
+
+pub trait FnOnce&lt;Args&gt; {
+    type Output;
+
+    extern "rust-call" fn call_once(self, args: Args) -&gt; Self::Output;
+}
+<span class="boring">}</span></code></pre></pre>
+<p>从特征约束能看出来, <code>Fn</code>的前提是实现<code>FnMut</code>, <code>FnMut</code>的前提是实现<code>FnOnce</code>, 因此要实现<code>Fn</code>就要同时实现<code>FnMut</code>和<code>FnOnce</code>
+从源码中还能看出, <code>Fn</code>获取<code>&amp;self</code>, <code>FnMut</code>获取<code>&amp;mut self</code>, 而<code>FnOnce</code>获取<code>self</code>, 在实际项目中建议先试用<code>Fn</code>特征, 然后编译器会告诉如何选择.</p>
 
                     </main>
 
